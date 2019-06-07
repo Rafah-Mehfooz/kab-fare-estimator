@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Ubuntu" />
+    <style>
+        /* Set the size of the div element that contains the map */
+
+        * {
+            font-family: "Ubuntu";
+        }
+
+        #map {
+            height: 600px;
+            /* The height is 400 pixels */
+            width: 100%;
+            /* The width is the width of the web page */
+        }
+
+        .locationInput {
+            text-overflow: ellipsis;
+            padding: 5px 25px 5px 5px;
+            font-size: 16px;
+            padding-bottom: 11px;
+            padding-top: 11px;
+            padding-left: 41px;
+            padding-right: 33px;
+            min-height: 52px;
+            background-color: #F6F6F6;
+            flex: 1;
+            white-space: nowrap;
+            outline: none;
+            color: #000000;
+            position: relative;
+            line-height: 24px;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        .inputContainer {
+            display: flex;
+            flex-direction: row;
+            position: relative;
+        }
+
+        .deleteIcon {
+            box-sizing: border-box;
+            right: 15px;
+            justify-content: center;
+            width: 1em;
+            display: flex;
+            flex-direction: column;
+            font-size: 16px;
+            position: absolute;
+            height: 100%;
+        }
+
+        .deleteIcon svg {
+            opacity: 0.2;
+            color: #000000;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        .deleteIcon svg:hover {
+            opacity: 1;
+            color: #276EF1;
+        }
+
+        .pac-container {
+            padding: 15px 0;
+            background-color: #f6f6f6;
+        }
+
+        .pac-item {
+            padding: 12px 5px;
+            border: none;
+            font-size: medium;
+        }
+
+        .pac-item span {
+            font-size: medium;
+        }
+
+        .resultContainer {
+            margin-top: 12px;
+            background-color: #F6F6F6;
+        }
+
+        .resultContainer p{
+            padding: 15px 18px 15px;
+            line-height: 20px;
+        }
+        .resultContainer span.options {
+            padding: 15px 18px 15px;
+            line-height: 20px;
+            display: block;
+            border-bottom: 1px solid #e7e7e7;
+            margin: 0 15px;
+        }
+
+        #totalExpense {
+            background-color: #F6F6F6;
+            font-size: 16px;
+        }
+
+        #totalExpense ul {
+            padding: 12px 0px 0px;
+            overflow-y: auto;
+            list-style-type: none;
+            margin: 0;
+        }
+
+        #totalExpense ul li {
+            line-height: 19px;
+            padding: 12px 21px;
+            cursor: pointer;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .mainContent {
+            flex: 3;
+        }
+
+        .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0 15px;
+        }
+
+        .gm-style .gm-style-iw-c {
+            padding: 0;
+            position: absolute;
+            background: rgb(255, 255, 255);
+            font-size: 14px;
+            padding: 8px 12px;
+            margin: 0px;
+            white-space: nowrap;
+            font-family: UberMoveText, "Open Sans", "Helvetica Neue", Helvetica, sans-serif;
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 8px 16px;
+            border-radius: 0;
+        }
+
+        .LocationsContainer {
+            position: relative;
+        }
+
+        .pickup_destin_Icon {
+            box-sizing: border-box;
+            left: 22px;
+            bottom: 33px;
+            z-index: 1;
+            top: 33px;
+            background-color: #000000;
+            position: absolute;
+            width: 1px;
+        }
+
+        .pickup_destin_Icon::before {
+            content: "";
+            position: absolute;
+            background-color: #000000;
+            border: 1px solid #000000;
+            bottom: -10px;
+            height: 5px;
+            left: -3px;
+            width: 5px;
+        }
+
+        .pickup_destin_Icon::after {
+            content: "";
+            position: absolute;
+            background-color: #000000;
+            border: 1px solid #000000;
+            border-radius: 50%;
+            top: -10px;
+            height: 5px;
+            left: -3px;
+            width: 5px;
+        }
+
+        body {
+            padding: 60px;
+            margin: 0;
+        }
+
+        .Heading {
+            
+            margin: 0 0 20px;
+            font-size: 42px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <section class="main">
+        <div class="sidebar">
+            <h1 class="Heading">Kab Expense Demo</h1>
+            <div class="LocationsContainer">
+                <div class="pickup_destin_Icon"></div>
+                <div class="inputContainer">
+                    <input id='pick' class="locationInput" name='pickup' placeholder='Enter pickup Location'>
+                    <div class="deleteIcon">
+                        <svg aria-hidden="true" focusable="false" width="12px" height="12px" fill="currentColor"
+                            viewBox="0 0 12 12" tabindex="0" role="button" aria-label="Delete pickup location"
+                            id="removePickup" onclick="removePickup()">
+                            <path
+                                d="M10.595 0L6 4.596 1.405 0 0 1.404 4.596 6 0 10.595 1.405 12 6 7.404 10.595 12 12 10.595 7.404 6 12 1.404z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="inputContainer">
+
+                    <input id='dest' class="locationInput" name='destin' placeholder='Enter Destination' />
+
+                    <div class="deleteIcon">
+                        <svg aria-hidden="true" focusable="false" width="12px" height="12px" fill="currentColor"
+                            viewBox="0 0 12 12" tabindex="0" role="button" aria-label="Delete pickup location"
+                            id="removeDestin" onclick="removeDestin()">
+                            <path
+                                d="M10.595 0L6 4.596 1.405 0 0 1.404 4.596 6 0 10.595 1.405 12 6 7.404 10.595 12 12 10.595 7.404 6 12 1.404z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="resultContainer">
+                <span class="options">Your Fare</span>
+                <div id="totalExpense">
+                    <ul>
+                        <li>
+                            <span class="carType"><b>Kab</b></span>
+                            <span id="carExpense"><b>PKR 0*</b></span>
+
+                        </li>
+                    </ul>
+                </div>
+                <p>* The charges for your selected route can be different based on the number of co-riders.</p>
+            </div>
+        </div>
+        <div class="mainContent">
+            <!--The div element for the map -->
+            <div id="map"></div>
+
+        </div>
+    </section>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+    </script>
+    <script type="text/javascript"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOgc_vDKfHb82J6C-KjGUcUQfWnShcEnc&libraries=places">
+    </script>
+    <script>
+        var globalCenter = {
+            lat: 33.6844,
+            lng: 73.0479
+        };
+
+        var map;
+        var cStyle = [{
+                "featureType": "all",
+                "elementType": "labels.text.fill",
+                "stylers": [{
+                        "color": "#7c93a3"
+                    },
+                    {
+                        "lightness": "-10"
+                    }
+                ]
+            },
+            {
+                "featureType": "administrative.country",
+                "elementType": "geometry",
+                "stylers": [{
+                    "visibility": "on"
+                }]
+            },
+            {
+                "featureType": "administrative.country",
+                "elementType": "geometry.stroke",
+                "stylers": [{
+                    "color": "#a0a4a5"
+                }]
+            },
+            {
+                "featureType": "administrative.province",
+                "elementType": "geometry.stroke",
+                "stylers": [{
+                    "color": "#62838e"
+                }]
+            },
+            {
+                "featureType": "landscape",
+                "elementType": "geometry.fill",
+                "stylers": [{
+                    "color": "#dde3e3"
+                }]
+            },
+            {
+                "featureType": "landscape.man_made",
+                "elementType": "geometry.stroke",
+                "stylers": [{
+                        "color": "#3f4a51"
+                    },
+                    {
+                        "weight": "0.30"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi",
+                "elementType": "all",
+                "stylers": [{
+                    "visibility": "simplified"
+                }]
+            },
+            {
+                "featureType": "poi.attraction",
+                "elementType": "all",
+                "stylers": [{
+                    "visibility": "on"
+                }]
+            },
+            {
+                "featureType": "poi.business",
+                "elementType": "all",
+                "stylers": [{
+                    "visibility": "off"
+                }]
+            },
+            {
+                "featureType": "poi.government",
+                "elementType": "all",
+                "stylers": [{
+                    "visibility": "off"
+                }]
+            },
+            {
+                "featureType": "poi.park",
+                "elementType": "all",
+                "stylers": [{
+                    "visibility": "on"
+                }]
+            },
+            {
+                "featureType": "poi.place_of_worship",
+                "elementType": "all",
+                "stylers": [{
+                    "visibility": "off"
+                }]
+            },
+            {
+                "featureType": "poi.school",
+                "elementType": "all",
+                "stylers": [{
+                    "visibility": "off"
+                }]
+            },
+            {
+                "featureType": "poi.sports_complex",
+                "elementType": "all",
+                "stylers": [{
+                    "visibility": "off"
+                }]
+            },
+            {
+                "featureType": "road",
+                "elementType": "all",
+                "stylers": [{
+                        "saturation": "-100"
+                    },
+                    {
+                        "visibility": "on"
+                    }
+                ]
+            },
+            {
+                "featureType": "road",
+                "elementType": "geometry.stroke",
+                "stylers": [{
+                    "visibility": "on"
+                }]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "geometry.fill",
+                "stylers": [{
+                    "color": "#bbcacf"
+                }]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "geometry.stroke",
+                "stylers": [{
+                        "lightness": "0"
+                    },
+                    {
+                        "color": "#bbcacf"
+                    },
+                    {
+                        "weight": "0.50"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "labels",
+                "stylers": [{
+                    "visibility": "on"
+                }]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "labels.text",
+                "stylers": [{
+                    "visibility": "on"
+                }]
+            },
+            {
+                "featureType": "road.highway.controlled_access",
+                "elementType": "geometry.fill",
+                "stylers": [{
+                    "color": "#ffffff"
+                }]
+            },
+            {
+                "featureType": "road.highway.controlled_access",
+                "elementType": "geometry.stroke",
+                "stylers": [{
+                    "color": "#a9b4b8"
+                }]
+            },
+            {
+                "featureType": "road.arterial",
+                "elementType": "labels.icon",
+                "stylers": [{
+                        "invert_lightness": true
+                    },
+                    {
+                        "saturation": "-7"
+                    },
+                    {
+                        "lightness": "3"
+                    },
+                    {
+                        "gamma": "1.80"
+                    },
+                    {
+                        "weight": "0.01"
+                    }
+                ]
+            },
+            {
+                "featureType": "transit",
+                "elementType": "all",
+                "stylers": [{
+                    "visibility": "off"
+                }]
+            },
+            {
+                "featureType": "water",
+                "elementType": "geometry.fill",
+                "stylers": [{
+                    "color": "#a3c7df"
+                }]
+            }
+        ];
+        var geocoder = new google.maps.Geocoder()
+        var pickupLatLng = null;
+        var destinLatLng = null;
+        var travelMode = 'DRIVING';
+        var directionsService = new google.maps.DirectionsService;
+        var directionsDisplay = new google.maps.DirectionsRenderer({
+            suppressMarkers: true,
+            suppressPolylines: true
+        });
+        console.log(directionsDisplay)
+        var bounds = new google.maps.LatLngBounds();
+        var pickupInfowindow = new google.maps.InfoWindow({
+            content: '<p>Pickup</p>'
+        });
+        var destinationInfowindow = new google.maps.InfoWindow({
+            content: '<p>Destination</p>'
+        });
+
+
+
+        function initMap() {
+            // The map, centered at Uluru
+            map = new google.maps.Map($("#map")[0], {
+
+                zoom: 14,
+                center: globalCenter
+            });
+
+
+
+        }
+        initMap()
+
+        var pickupInput = $('#pick')[0]
+        var pickupMarker = new google.maps.Marker({
+            position: globalCenter,
+            icon: 'https://d3i4yxtzktqr9n.cloudfront.net/uber-sites/699a1bf5fa911a4ea73540c666ae7a51.svg',
+            draggable: true,
+            map: map
+        });
+
+        var destinInput = $('#dest')[0]
+        var destinMarker = new google.maps.Marker({
+            position: globalCenter,
+            icon: 'https://d3i4yxtzktqr9n.cloudfront.net/uber-sites/5036cf2628e7c372cba49a09d137c534.svg',
+            draggable: true,
+            visible: false,
+            map: map
+        });
+
+        var polyline = new google.maps.Polyline({
+            path: [],
+            strokeColor: '#000000',
+            strokeWeight: 3
+        });
+
+        var markerOptions = {
+            componentRestrictions: {
+                country: 'pk'
+            }
+        };
+
+        var pickupAC = new google.maps.places.Autocomplete(pickupInput, markerOptions);
+        $('#pick').on('change, blur', function (e) {
+            if (!this.value) {
+                removePickup()
+            }
+        });
+
+        $('#dest').on('change, blur', function (e) {
+            if (!this.value) {
+                removeDestin()
+            }
+        });
+
+        pickupAC.addListener('place_changed', function () {
+
+            pickupLatLng = updateMarkerPos(pickupMarker, this.getPlace(), pickupInfowindow)
+            var distance = calcRoute()
+            calculateExpense(distance)
+
+        })
+
+        google.maps.event.addListener(pickupMarker, 'dragend', function () {
+
+            pickupLatLng = this.getPosition()
+            updateInputPos(pickupLatLng, pickupInput, pickupInfowindow)
+            var distance = calcRoute()
+            calculateExpense(distance)
+        })
+
+        var destinAC = new google.maps.places.Autocomplete(destinInput, markerOptions);
+        destinAC.addListener('place_changed', function () {
+            destinLatLng = updateMarkerPos(destinMarker, this.getPlace(), destinationInfowindow)
+            var distance = calcRoute()
+            calculateExpense(distance)
+        })
+
+        google.maps.event.addListener(destinMarker, 'dragend', function () {
+
+            destinLatLng = this.getPosition()
+            updateInputPos(destinLatLng, destinInput, destinationInfowindow)
+            var distance = calcRoute()
+            calculateExpense(distance)
+        })
+
+
+        function updateMarkerPos(marker, place, InfoWindow) {
+            console.log(place)
+            InfoWindow.setContent(`${place.name}`)
+            console.log(InfoWindow)
+            marker.setVisible(false);
+            if (!place.geometry) {
+                return null;
+            }
+            // If the place has a geometry, then present it on a map.
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.location);
+                map.setZoom(17);
+            }
+            marker.setPosition(place.geometry.location);
+            marker.setVisible(true);
+            return place.geometry.location
+        }
+
+        function updateInputPos(latLng, input, InfoWindow) {
+            map.setCenter(latLng);
+            map.setZoom(17);
+            geocoder.geocode({
+                'location': latLng
+            }, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                        console.log(results[0])
+                        InfoWindow.setContent(`${results[0].address_components[0].short_name}`)
+                        input.value = results[0].formatted_address
+                    }
+                }
+            })
+        }
+
+
+        function calcRoute() {
+
+            if (pickupLatLng && destinLatLng) {
+                pickupInfowindow.open(map, pickupMarker);
+                destinationInfowindow.open(map, destinMarker);
+                var start = pickupLatLng;
+                var end = destinLatLng;
+                var request = {
+                    origin: start,
+                    destination: end,
+                    travelMode: 'DRIVING'
+                };
+                directionsDisplay.setMap(map);
+
+                directionsService.route(request, function (result, status) {
+                    if (status == 'OK') {
+                        console.log(result)
+                        directionsDisplay.setDirections(result);
+
+                        pickupMarker.setVisible(true)
+                        destinMarker.setVisible(true)
+
+                        var legs = result.routes[0].legs;
+                        var path = result.routes[0].overview_path;
+
+                        polyline.setPath([])
+                        for (i = 0; i < legs.length; i++) {
+                            var steps = legs[i].steps;
+                            for (j = 0; j < steps.length; j++) {
+                                var nextSegment = steps[j].path;
+                                for (k = 0; k < nextSegment.length; k++) {
+                                    polyline.getPath().push(nextSegment[k]);
+                                }
+                            }
+                        }
+
+                        polyline.setMap(map);
+
+                        pickupMarker.setPosition(legs[0].start_location)
+                        destinMarker.setPosition(legs[0].end_location)
+                        calculateExpense(result['routes'][0].legs[0].distance.value)
+                    }
+                });
+
+            } else if (pickupLatLng) {
+                pickupInfowindow.open(map, pickupMarker);
+                destinationInfowindow.close()
+                map.setCenter(pickupLatLng);
+                map.setZoom(17);
+                directionsDisplay.set('directions', null);
+                return 0
+            } else if (destinLatLng) {
+                destinationInfowindow.open(map, destinMarker);
+                pickupInfowindow.close()
+                map.setCenter(destinLatLng);
+                map.setZoom(17);
+                directionsDisplay.set('directions', null);
+                return 0
+            }
+        }
+
+
+        function calculateExpense(distance) {
+            if (distance > 0) {
+                var distanceInKM = distance / 1E3
+                var output
+                if (distanceInKM >= 30) {
+                    output = "Unavailable, Large Distance"
+                } else {
+                    var roundTrip = distanceInKM * 2;
+                    if (roundTrip >= 20) {
+                        output = roundTrip * 48 * 6
+                    } else {
+                        output = roundTrip * 48 * 6 + 1E3
+                    }
+
+                }
+                output = 100 * Math.ceil(Math.round(output) / 100)
+                $('#carExpense')[0].innerHTML = `<b>PKR${output}*/24 Days</b>`
+
+            } else {
+                $('#carExpense')[0].innerHTML = 'Unavailable'
+            }
+
+        }
+
+        function removePickup() {
+            $('#pick')[0].value = ""
+            pickupMarker.setPosition(null)
+            destinMarker.setVisible(true)
+            pickupInfowindow.close()
+
+            pickupLatLng = null
+            calcRoute()
+        }
+
+
+        function removeDestin() {
+            $('#dest')[0].value = ""
+            destinMarker.setPosition(null)
+            pickupMarker.setVisible(true)
+            destinationInfowindow.close()
+
+            destinLatLng = null
+            calcRoute()
+        }
+    </script>
+</body>
+
+</html>
