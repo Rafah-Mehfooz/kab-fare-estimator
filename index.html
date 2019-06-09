@@ -3,6 +3,8 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Ubuntu" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
         /* Set the size of the div element that contains the map */
 
@@ -199,6 +201,42 @@
             margin: 0 0 20px;
             font-size: 42px;
         }
+
+        @media only screen and (max-width: 768px) {
+            h1.Heading {
+                font-size: large;
+            }
+
+            .main {
+                flex-direction: column;
+            }
+            .sidebar{
+                padding: 0px;
+            }
+
+            .locationInput {
+                padding: 0px 40px 0px 33px;
+                line-height: 18px;
+                min-height: 44px;
+            }
+
+            .resultContainer span.options {
+                padding: 5px 18px;
+            }
+
+            .resultContainer p {
+                padding: 5px 18px 5px;
+                line-height: 14px;
+            }
+
+            div#map {
+                height: 300px;
+            }
+
+            body {
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 
@@ -240,13 +278,13 @@
 
             </div>
 
-            
+
             <div class="inputContainer">
-                    <select id="days" class="locationInput">
-                        <option value="5" selected>5 Days / Week</option>
-                        <option value="6">6 Days / Week</option>
-                    </select>
-                </div>
+                <select id="days" class="locationInput">
+                    <option value="5" selected>5 Days / Week</option>
+                    <option value="6">6 Days / Week</option>
+                </select>
+            </div>
 
             <div class="resultContainer">
                 <span class="options">Your Fare</span>
@@ -698,7 +736,7 @@
             }
         }
 
-        
+
         function calculateExpense(TDistance) {
             if (TDistance > 0) {
                 var distanceInKM = TDistance / 1E3
@@ -744,7 +782,7 @@
             calcRoute()
         }
 
-        $("#days").change(function(){
+        $("#days").change(function () {
             calculateExpense(TDistance)
         })
     </script>
